@@ -3,7 +3,7 @@
   "id": "sunquan-found-phone",
   "title": "遗失的手机",
   "description": "手机主人遗失的手机。",
-  "revision": 5,
+  "revision": 6,
   "phone": {
     "owner": "机主",
     "date": "2024-12-14",
