@@ -3,10 +3,10 @@
   "id": "sunquan-found-phone",
   "title": "遗失的手机",
   "description": "手机主人遗失的手机。",
-  "revision": 3,
+  "revision": 4,
   "phone": {
     "owner": "机主",
-    "date": "2026-11-14",
+    "date": "2024-12-14",
     "time": "20:18",
     "battery": 94,
     "network": "5G",
@@ -111,13 +111,31 @@
           "id": "sunquan-msg-1",
           "body": "骗子",
           "senderId": "owner",
-          "time": "2026-11-14 20:18"
+          "time": "2024-12-14 20:18"
         },
         {
           "id": "sunquan-msg-2",
           "body": "说好一起吃饭的",
           "senderId": "owner",
-          "time": "2026-11-14 20:18"
+          "time": "2024-12-14 20:18"
+        },
+        {
+          "id": "sunquan-msg-3",
+          "body": "忘记了",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18"
+        },
+        {
+          "id": "sunquan-msg-4",
+          "body": "强尼说吃新白鹿",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18"
+        },
+        {
+          "id": "sunquan-msg-5",
+          "body": "直接出发了",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18"
         }
       ]
     }
