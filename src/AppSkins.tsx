@@ -37,6 +37,7 @@ export type SkinProps = {
   onUi?: (key: string, value: UiValue) => void;
   appId?: string;
   owner?: string;
+  ownerAvatar?: string;
   virtualTime?: string;
   name: string;
   items: Item[];
@@ -58,7 +59,7 @@ function Avatar({
   src?: string;
 }) {
   return (
-    <span className={`skin-avatar ${round ? "round" : ""}`}>
+    <span className={`skin-avatar ${round ? "round" : ""}`} style={src === "#000000" ? { backgroundColor: "#000000" } : undefined}>
       {safeMedia(src)?.startsWith("data:image/") ? (
         <img src={safeMedia(src)} alt="" />
       ) : (
@@ -96,6 +97,7 @@ function MessageList({
   onRead: (id: string) => void;
   whatsapp?: boolean;
 }) {
+  const [transcribed, setTranscribed] = useState<Record<string, boolean>>({});
   return (
     <div className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
       <div className="skin-date">{items[0]?.time.slice(0, 10)}</div>
@@ -111,7 +113,9 @@ function MessageList({
             className="skin-bubble"
             onClick={() => (creator ? onItem(i) : onRead(i.id))}
           >
-            {["image", "audio", "video"].includes(i.kind) ? (
+            {i.kind === "audio" ? (
+              <span className="wx-voice"><span aria-hidden="true">◖)))</span><b>{i.meta.duration || "语音"}</b></span>
+            ) : ["image", "video"].includes(i.kind) ? (
               <ItemMedia item={i} />
             ) : i.kind === "transfer" ? (
               <div className="skin-transfer">
@@ -126,6 +130,12 @@ function MessageList({
               {whatsapp && i.outgoing && <CheckCheck size={11} />}
             </small>
           </button>
+          {i.kind === "audio" && !i.outgoing && (
+            <div className="wx-voice-actions">
+              <button onClick={() => setTranscribed((v) => ({ ...v, [i.id]: !v[i.id] }))}>{transcribed[i.id] ? "收起文字" : "转文字"}</button>
+              {transcribed[i.id] && <p>{i.meta.transcript || i.body}</p>}
+            </div>
+          )}
           {!whatsapp && i.outgoing && <Avatar name={i.sender} src={i.avatar} />}
         </div>
       ))}
@@ -149,6 +159,24 @@ function Compose({
       <Smile size={21} />
       {wa ? <Mic size={20} /> : <Plus size={22} />}
     </div>
+  );
+}
+function GuidedCompose({ p }: { p: SkinProps }) {
+  const suggestions = ["算了", "伤心了", "睡觉了"];
+  const sent = (p.ui?.["sunquan-guided-sent"] as string[] | undefined) || [];
+  const [draft, setDraft] = useState("");
+  const fillNext = () => { if (!draft && sent.length < suggestions.length) setDraft(suggestions[sent.length]); };
+  const send = () => {
+    if (!draft.trim()) return;
+    p.onUi?.("sunquan-guided-sent", [...sent, draft.trim()]);
+    setDraft("");
+  };
+  return (
+    <form className="skin-compose wx-guided-compose" onSubmit={(e) => { e.preventDefault(); send(); }}>
+      <Mic size={20} />
+      <input aria-label="微信消息输入框" placeholder={sent.length < 3 ? "点击输入框继续…" : "输入消息"} value={draft} onFocus={fillNext} onChange={(e) => setDraft(e.target.value)} />
+      <button type="submit" disabled={!draft.trim()}>发送</button>
+    </form>
   );
 }
 export function WeChatSkin(p: SkinProps) {
@@ -278,12 +306,21 @@ export function WeChatSkin(p: SkinProps) {
       ) : p.thread ? (
         <>
           <MessageList
-            items={p.items.filter((i) => i.title === p.thread)}
+            items={[
+              ...p.items.filter((i) => i.title === p.thread),
+              ...((p.ui?.["sunquan-guided-sent"] as string[] | undefined) || []).map((body, index) => ({
+                id: "sunquan-guided-" + index, title: "孙权", body, richText: "", meta: {}, time: "2024-12-14 20:18", sender: p.owner || "机主", avatar: p.ownerAvatar || "", kind: "text" as const, media: "", hidden: false, unlock: "", password: "", folder: "", favorite: false, outgoing: true, read: true, likes: 0, comments: [],
+              }))
+            ]}
             creator={p.creator}
             onItem={p.onItem}
             onRead={p.onRead}
           />
-          <Compose creator={p.creator} onAdd={p.onAdd} />
+          {p.thread === "孙权" ? (
+            <GuidedCompose p={p} />
+          ) : (
+            <Compose creator={p.creator} onAdd={p.onAdd} />
+          )}
         </>
       ) : moments ? (
         <div className="wx-moments">
@@ -419,7 +456,7 @@ export function WeChatSkin(p: SkinProps) {
           ) : (
             <>
               <div className="wx-profile">
-                <Avatar name={p.owner || "机主"} />
+                <Avatar name={p.owner || "机主"} src={p.ownerAvatar} />
                 <div>
                   <h2>{p.owner || "机主"}</h2>
                   <small>微信号：未设置</small>

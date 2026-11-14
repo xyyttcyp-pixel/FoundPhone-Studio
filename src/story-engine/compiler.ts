@@ -33,6 +33,8 @@ export const storySchema = z
       .partial()
       .extend({
         owner: z.string(),
+        ownerAvatar: z.string().default(""),
+        wallpaperImage: z.string().default(""),
         date: z
           .string()
           .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -116,6 +118,8 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
     if (names.has(v)) fail(p, "重复 ID: " + v);
     names.add(v);
   };
+  if (s.phone.ownerAvatar && !safeMedia(s.phone.ownerAvatar)) fail("phone.ownerAvatar", "无效机主头像");
+  if (s.phone.wallpaperImage && !safeMedia(s.phone.wallpaperImage)) fail("phone.wallpaperImage", "无效壁纸图片");
   const contacts = new Map(s.contacts.map((c) => [c.id, c]));
   s.contacts.forEach((c, i) => unique(c.id, `contacts.${i}.id`));
   const configuredIds = s.installedApps.map((a) =>
@@ -146,7 +150,7 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
       ...raw,
     });
     for (const k of ["media", "avatar"] as const)
-      if (item[k] && !safeMedia(item[k]))
+      if (item[k] && item[k] !== "#000000" && !safeMedia(item[k]))
         fail(p + "." + k, "仅允许受支持的内嵌媒体，不允许脚本或远程资源");
     if (item.richText) {
       let doc;
@@ -162,7 +166,7 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
   for (const [app, items] of Object.entries(s.content))
     items.forEach((i, n) => add(app, i, `content.${app}.${n}`));
   s.contacts.forEach((c, n) => {
-    if (c.avatar && !safeMedia(c.avatar))
+    if (c.avatar && c.avatar !== "#000000" && !safeMedia(c.avatar))
       fail(`contacts.${n}.avatar`, "无效头像");
     if (installed.has("contacts"))
       add(
@@ -202,7 +206,7 @@ export function compileStory(raw: unknown): { story: Story; work: Work } {
             senderId === "owner"
               ? s.phone.owner
               : contacts.get(senderId || "")?.name || m.sender || s.phone.owner,
-          avatar: m.avatar || contacts.get(senderId || "")?.avatar || "",
+          avatar: m.avatar || (senderId === "owner" ? s.phone.ownerAvatar : contacts.get(senderId || "")?.avatar) || "",
           outgoing: senderId === "owner" || m.outgoing,
           meta: {
             ...m.meta,

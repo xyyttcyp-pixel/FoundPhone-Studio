@@ -94,7 +94,7 @@ export function Avatar({
   src?: string;
 }) {
   return (
-    <span className={`catalog-avatar ${round ? "round" : ""}`}>
+    <span className={`catalog-avatar ${round ? "round" : ""}`} style={src === "#000000" ? { backgroundColor: "#000000" } : undefined}>
       {safeMedia(src)?.startsWith("data:image/") ? (
         <img src={safeMedia(src)} alt="" />
       ) : (

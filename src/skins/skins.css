@@ -4130,3 +4130,6 @@
 .catalog-slot[hidden] {
   display: none;
 }
+
+/* Story-specific WeChat voice and guided reply controls. */
+.wx-voice{display:flex;align-items:center;gap:12px;min-width:112px;padding:2px 0;color:#303030}.wx-voice>span{font-size:18px;letter-spacing:1px}.wx-voice>b{font-size:13px;font-weight:500}.wx-voice-actions{margin:3px 0 8px 48px;max-width:240px}.wx-voice-actions button{font-size:11px;color:#576b9a;padding:3px 0}.wx-voice-actions p{margin-top:5px;padding:8px 10px;border-radius:8px;background:#f4f4f4;color:#555;font-size:12px;line-height:1.5}.wx-guided-compose input{flex:1;min-width:0;border:0!important;box-shadow:none!important;background:#fff;border-radius:18px;padding:9px 12px;font-size:14px}.wx-guided-compose>button{background:#07c160;color:white;border-radius:5px;padding:8px 12px;font-size:13px;white-space:nowrap}

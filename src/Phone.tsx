@@ -319,6 +319,7 @@ function PhoneRuntime({
       <KeyboardContext.Provider value={setKeyboard}>
         <div
           className={`phone-screen wallpaper-${work.phone.wallpaper} ${locked ? "is-locked" : ""} ${app ? "in-app" : ""} ${keyboard ? "keyboard-open" : ""}`}
+          style={safeMedia(work.phone.wallpaperImage) ? { backgroundImage: `url("${safeMedia(work.phone.wallpaperImage)}")`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
           data-app={app}
           onDragStart={(e) => e.preventDefault()}
           onPointerDown={(e) => {
@@ -988,6 +989,7 @@ function AppContent({
             <Skin
               appId={app.id}
               owner={work.phone.owner}
+              ownerAvatar={work.phone.ownerAvatar}
               virtualTime={state.time}
               ui={state.ui?.[app.id]}
               onUi={creator ? undefined : onUi}

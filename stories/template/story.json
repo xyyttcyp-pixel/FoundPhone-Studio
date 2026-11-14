@@ -3,15 +3,17 @@
   "id": "sunquan-found-phone",
   "title": "遗失的手机",
   "description": "手机主人遗失的手机。",
-  "revision": 4,
+  "revision": 5,
   "phone": {
     "owner": "机主",
     "date": "2024-12-14",
     "time": "20:18",
     "battery": 94,
     "network": "5G",
-    "wallpaper": "sage",
-    "passcode": "201014"
+    "wallpaper": "custom",
+    "passcode": "201014",
+    "wallpaperImage": "",
+    "ownerAvatar": ""
   },
   "installedApps": [
     "appstore",
@@ -93,7 +95,7 @@
       "id": "sunquan",
       "name": "孙权",
       "phone": "",
-      "avatar": "",
+      "avatar": "#000000",
       "bio": ""
     }
   ],
@@ -136,6 +138,42 @@
           "body": "直接出发了",
           "senderId": "sunquan",
           "time": "2024-12-14 20:18"
+        },
+        {
+          "id": "sunquan-voice-1",
+          "title": "孙权",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "2秒",
+            "transcript": "完了呀"
+          }
+        },
+        {
+          "id": "sunquan-voice-2",
+          "title": "孙权",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "3秒",
+            "transcript": "都怪强尼"
+          }
+        },
+        {
+          "id": "sunquan-voice-3",
+          "title": "孙权",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "7秒",
+            "transcript": "我和阿娇在一块 强，强尼说吃新白鹿"
+          }
         }
       ]
     }
