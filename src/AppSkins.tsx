@@ -1,6 +1,6 @@
 import { NativeComposer } from "./DeviceSystem";
 import { useSkinState } from "./skinState";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
   Plus,
@@ -58,13 +58,14 @@ function Avatar({
   round?: boolean;
   src?: string;
 }) {
+  const isBlack = src === "#000000";
+  const image = safeMedia(src);
   return (
-    <span className={`skin-avatar ${round ? "round" : ""}`} style={src === "#000000" ? { backgroundColor: "#000000" } : undefined}>
-      {src === "#000000" ? null : safeMedia(src) ? (
-        <img src={safeMedia(src)} alt="" />
-      ) : (
-        name.slice(0, 1)
-      )}
+    <span
+      className={`skin-avatar ${round || isBlack ? "round" : ""}`}
+      style={isBlack ? { backgroundColor: "#000000" } : undefined}
+    >
+      {isBlack ? null : image ? <img src={image} alt="" /> : name.slice(0, 1)}
     </span>
   );
 }
@@ -90,16 +91,24 @@ function MessageList({
   onItem,
   onRead,
   whatsapp = false,
+  followLatest = false,
 }: {
   items: Item[];
   creator: boolean;
   onItem: (i: Item) => void;
   onRead: (id: string) => void;
   whatsapp?: boolean;
+  followLatest?: boolean;
 }) {
+  const messages = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (followLatest && messages.current) {
+      messages.current.scrollTop = messages.current.scrollHeight;
+    }
+  }, [followLatest, items.length]);
   const [transcribed, setTranscribed] = useState<Record<string, boolean>>({});
   return (
-    <div className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
+    <div ref={messages} className={`skin-messages ${whatsapp ? "wa-wallpaper" : ""}`}>
       <div className="skin-date">{items[0]?.time.slice(0, 10)}</div>
       {items.map((i) => (
         <div
@@ -130,7 +139,7 @@ function MessageList({
               {whatsapp && i.outgoing && <CheckCheck size={11} />}
             </small>
           </button>
-          {i.kind === "audio" && !i.outgoing && (
+          {i.kind === "audio" && !i.outgoing && (i.meta.transcript || i.body) && (
             <div className="wx-voice-actions">
               <button onClick={() => setTranscribed((v) => ({ ...v, [i.id]: !v[i.id] }))}>{transcribed[i.id] ? "收起文字" : "转文字"}</button>
               {transcribed[i.id] && <p>{i.meta.transcript || i.body}</p>}
@@ -162,10 +171,13 @@ function Compose({
   );
 }
 function GuidedCompose({ p }: { p: SkinProps }) {
-  const suggestions = ["算了", "伤心了", "睡觉了"];
+  const suggestions = ["算了", "伤心了", "睡觉了", "等到现在", "让人难过"];
   const sent = (p.ui?.["sunquan-guided-sent"] as string[] | undefined) || [];
   const [draft, setDraft] = useState("");
-  const fillNext = () => { if (!draft && sent.length < suggestions.length) setDraft(suggestions[sent.length]); };
+  const nextSuggestion = suggestions[sent.length];
+  const fillNext = () => {
+    if (!draft && nextSuggestion) setDraft(nextSuggestion);
+  };
   const send = () => {
     if (!draft.trim()) return;
     p.onUi?.("sunquan-guided-sent", [...sent, draft.trim()]);
@@ -174,7 +186,13 @@ function GuidedCompose({ p }: { p: SkinProps }) {
   return (
     <form className="skin-compose wx-guided-compose" onSubmit={(e) => { e.preventDefault(); send(); }}>
       <Mic size={20} />
-      <input aria-label="微信消息输入框" placeholder={sent.length < 3 ? "点击输入框继续…" : "输入消息"} value={draft} onFocus={fillNext} onChange={(e) => setDraft(e.target.value)} />
+      <input
+        aria-label="微信消息输入框"
+        placeholder={nextSuggestion ? "点击输入框继续…" : "输入消息"}
+        value={draft}
+        onClick={fillNext}
+        onChange={(e) => setDraft(e.target.value)}
+      />
       <button type="submit" disabled={!draft.trim()}>发送</button>
     </form>
   );
@@ -191,13 +209,51 @@ export function WeChatSkin(p: SkinProps) {
     "readThreads",
     [],
   );
+  const sent = (p.ui?.["sunquan-guided-sent"] as string[] | undefined) ?? [];
+  const repliesShown = Number(p.ui?.["sunquan-followup-shown"] ?? 0);
+  const followup = p.items.filter((item) => item.meta.guidedReply === "followup");
+  const { onUi, thread } = p;
+  const followupStarted = sent[4] === "让人难过";
+  useEffect(() => {
+    if (!onUi || thread !== "孙权" || !followupStarted || repliesShown >= followup.length) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      onUi("sunquan-followup-shown", repliesShown + 1);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [onUi, thread, followupStarted, repliesShown, followup.length]);
+  const visibleFollowup = followup.slice(0, repliesShown);
+  const visibleItems = p.items.filter((item) => item.meta.guidedReply !== "followup");
+  const conversationItems = [...visibleItems, ...visibleFollowup];
   const conversations = [
     ...new Set(
-      p.items
+      conversationItems
         .filter((i) => !["朋友圈", "我"].includes(i.folder))
         .map((i) => i.title),
     ),
   ];
+  const guidedMessages = (p.thread === "孙权" ? sent : []).map((body, index) => ({
+    id: "sunquan-guided-" + index,
+    title: "孙权",
+    body,
+    richText: "",
+    meta: {},
+    time: "2024-12-14 20:18",
+    sender: p.owner || "机主",
+    avatar: p.ownerAvatar || "",
+    kind: "text" as const,
+    media: "",
+    hidden: false,
+    unlock: "",
+    password: "",
+    folder: "",
+    favorite: false,
+    outgoing: true,
+    read: true,
+    likes: 0,
+    comments: [],
+  }));
   const contacts = [
     ...new Set(p.items.map((i) => i.sender).filter((s) => s !== "我")),
   ];
@@ -307,12 +363,15 @@ export function WeChatSkin(p: SkinProps) {
         <>
           <MessageList
             items={[
-              ...p.items.filter((i) => i.title === p.thread && i.kind !== "audio"),
-              ...((p.thread === "孙权" ? p.ui?.["sunquan-guided-sent"] : []) as string[] | undefined || []).map((body, index) => ({
-                id: "sunquan-guided-" + index, title: "孙权", body, richText: "", meta: {}, time: "2024-12-14 20:18", sender: p.owner || "机主", avatar: p.ownerAvatar || "", kind: "text" as const, media: "", hidden: false, unlock: "", password: "", folder: "", favorite: false, outgoing: true, read: true, likes: 0, comments: [],
-              })),
-              ...(((p.thread === "孙权" && ((p.ui?.["sunquan-guided-sent"] as string[] | undefined) || []).length >= 3) ? p.items.filter((i) => i.title === p.thread && i.kind === "audio") : []))
+              ...visibleItems.filter((i) => i.title === p.thread && i.kind !== "audio"),
+              ...guidedMessages.slice(0, 3),
+              ...(guidedMessages.length >= 3
+                ? visibleItems.filter((i) => i.title === p.thread && i.kind === "audio")
+                : []),
+              ...guidedMessages.slice(3),
+              ...visibleFollowup.filter((i) => i.title === p.thread),
             ]}
+            followLatest={p.thread === "孙权" && guidedMessages.length > 0}
             creator={p.creator}
             onItem={p.onItem}
             onRead={p.onRead}
@@ -370,13 +429,16 @@ export function WeChatSkin(p: SkinProps) {
                 .filter(
                   (t) =>
                     t.includes(query) ||
-                    p.items.some(
+                    conversationItems.some(
                       (i) => i.title === t && i.body.includes(query),
                     ),
                 )
                 .map((t) => {
-                  const list = p.items.filter((i) => i.title === t),
+                  const list = conversationItems.filter((i) => i.title === t),
                     last = list.at(-1)!;
+                  const contactAvatar = list.find(
+                    (i) => i.sender === t && !i.outgoing && i.avatar,
+                  )?.avatar;
                   return (
                     <button
                       className="wx-chat-row"
@@ -388,7 +450,7 @@ export function WeChatSkin(p: SkinProps) {
                       }}
                     >
                       <span className="wx-chat-avatar">
-                        <Avatar name={t} src={last.avatar} />
+                        <Avatar name={t} src={contactAvatar || last.avatar} />
                         {!readThreads.includes(t) &&
                           list.some((i) => !i.read) && (
                             <b className="wx-unread">
@@ -398,7 +460,7 @@ export function WeChatSkin(p: SkinProps) {
                       </span>
                       <div>
                         <strong>{t}</strong>
-                        <p>{last.body}</p>
+                        <p>{last.kind === "audio" && !last.body ? "[语音]" : last.body}</p>
                       </div>
                       <time>{last.time.slice(-5)}</time>
                     </button>

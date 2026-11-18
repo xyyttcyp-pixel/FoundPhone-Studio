@@ -3,7 +3,7 @@
   "id": "sunquan-found-phone",
   "title": "遗失的手机",
   "description": "手机主人遗失的手机。",
-  "revision": 7,
+  "revision": 8,
   "phone": {
     "owner": "机主",
     "date": "2024-12-14",
@@ -173,6 +173,114 @@
           "meta": {
             "duration": "7秒",
             "transcript": "我和阿娇在一块 强，强尼说吃新白鹿"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-1",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "6秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-2",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "6秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-3",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "6秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-4",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "7秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-5",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "15秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-6",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "6秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-7",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "3秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-8",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "11秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-voice-9",
+          "body": "",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "kind": "audio",
+          "meta": {
+            "duration": "2秒",
+            "guidedReply": "followup"
+          }
+        },
+        {
+          "id": "sunquan-followup-text",
+          "body": "灵宝",
+          "senderId": "sunquan",
+          "time": "2024-12-14 20:18",
+          "meta": {
+            "guidedReply": "followup"
           }
         }
       ]
