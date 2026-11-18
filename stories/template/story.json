@@ -3,7 +3,7 @@
   "id": "sunquan-found-phone",
   "title": "遗失的手机",
   "description": "手机主人遗失的手机。",
-  "revision": 6,
+  "revision": 7,
   "phone": {
     "owner": "机主",
     "date": "2024-12-14",
@@ -12,8 +12,8 @@
     "network": "5G",
     "wallpaper": "custom",
     "passcode": "201014",
-    "wallpaperImage": "",
-    "ownerAvatar": ""
+    "wallpaperImage": "/wallpaper.jpg",
+    "ownerAvatar": "/owner-avatar.jpg"
   },
   "installedApps": [
     "appstore",
