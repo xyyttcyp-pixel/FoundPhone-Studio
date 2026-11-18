@@ -60,7 +60,7 @@ function Avatar({
 }) {
   return (
     <span className={`skin-avatar ${round ? "round" : ""}`} style={src === "#000000" ? { backgroundColor: "#000000" } : undefined}>
-      {safeMedia(src)?.startsWith("data:image/") ? (
+      {src === "#000000" ? null : safeMedia(src) ? (
         <img src={safeMedia(src)} alt="" />
       ) : (
         name.slice(0, 1)
