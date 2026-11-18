@@ -307,13 +307,11 @@ export function WeChatSkin(p: SkinProps) {
         <>
           <MessageList
             items={[
-              ...p.items.filter((i) => i.title === p.thread).filter((i) =>
-                i.kind !== "audio" ||
-                ((p.ui?.["sunquan-guided-sent"] as string[] | undefined) || []).length >= 3
-              ),
-              ...((p.ui?.["sunquan-guided-sent"] as string[] | undefined) || []).map((body, index) => ({
+              ...p.items.filter((i) => i.title === p.thread && i.kind !== "audio"),
+              ...((p.thread === "孙权" ? p.ui?.["sunquan-guided-sent"] : []) as string[] | undefined || []).map((body, index) => ({
                 id: "sunquan-guided-" + index, title: "孙权", body, richText: "", meta: {}, time: "2024-12-14 20:18", sender: p.owner || "机主", avatar: p.ownerAvatar || "", kind: "text" as const, media: "", hidden: false, unlock: "", password: "", folder: "", favorite: false, outgoing: true, read: true, likes: 0, comments: [],
-              }))
+              })),
+              ...(((p.thread === "孙权" && ((p.ui?.["sunquan-guided-sent"] as string[] | undefined) || []).length >= 3) ? p.items.filter((i) => i.title === p.thread && i.kind === "audio") : []))
             ]}
             creator={p.creator}
             onItem={p.onItem}
